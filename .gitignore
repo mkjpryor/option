@@ -1,0 +1,11 @@
+# Zed editor
+.zedstate
+
+# Composer
+composer.lock
+composer.phar
+vendor/
+
+# Test files
+index.php
+main.php
