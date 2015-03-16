@@ -1,5 +1,7 @@
 # mkjpryor/option #
 
+[![Build Status](https://travis-ci.org/mkjpryor/option.svg)](https://travis-ci.org/mkjpryor/option) [![Coverage Status](https://coveralls.io/repos/mkjpryor/option/badge.svg)](https://coveralls.io/r/mkjpryor/option)
+
 Simple option and result classes for PHP, inspired by Scala's Option, Haskell's Maybe and Rust's Result.
 
 The Option type provides additional functionality over nullable types for operating on values that may or may not be present.
@@ -20,7 +22,7 @@ php composer.phar require mkjpryor/option dev-master
 
 ### Creating an Option ###
 
-```
+```php
 <?php
 
 use Mkjp\Option\Option;
@@ -39,7 +41,7 @@ $o3 = Option::from(null);
 
 ### Creating a Result ###
 
-```
+```php
 <?php
 
 use Mkjp\Option\Result;
@@ -53,7 +55,7 @@ $r2 = Result::error(new \Exception("Some error occurred"));
 // Create a result by trying some operation that might fail
 //   Creates a success if the function returns successfully
 //   Creates an error if the function throws an exception
-$r3 = Result::try_(() => {
+$r3 = Result::_try(() => {
     // Some operation that might fail with an exception
 });
 ```
@@ -62,7 +64,7 @@ $r3 = Result::try_(() => {
 
 The underlying value can be retrieved from an `Option` in an unsafe or safe manner (N.B. the same methods are available for retrieving a value from a `Result`):
 
-```
+```php
 <?php
 
 // UNSAFE - throws a LogicException if the option is empty
@@ -88,7 +90,7 @@ $val = $opt->getOrNull();
 
 In the following example, we want to retrieve a user by id from the database and welcome them. If the user does not exist, we want to welcome them as a guest.
 
-```
+```php
 <?php
 
 use Mkjp\Option\Option;
@@ -118,7 +120,7 @@ class User {
  */
 function findUserById($id) {
     // Assume DB::execute throws a DBError if there is an error while querying
-    $result = Result::try_(function() use($id) {
+    $result = Result::_try(function() use($id) {
         return DB::execute("SELECT * FROM users WHERE id = ?", $id);
     });
     

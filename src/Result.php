@@ -1,4 +1,4 @@
-<?hh // strict
+<?php
 
 namespace Mkjp\Option;
 
@@ -25,7 +25,7 @@ class Result implements \IteratorAggregate {
      */
     public function andThen(callable $f) {
         if( $this->value !== null ) return $f($this->get());
-        if( $this->error !== null ) return Result::error($this->error);
+        if( $this->error !== null ) return $this;
         throw new \LogicException("Value and error cannot both be null");
     }
     
@@ -109,7 +109,7 @@ class Result implements \IteratorAggregate {
      */
     public function map(callable $f) {
         if( $this->value !== null ) return Result::success($f($this->value));
-        if( $this->error !== null ) return Result::error($this->error);
+        if( $this->error !== null ) return $this;
         throw new \LogicException("Value and error cannot both be null");
     }
     
@@ -120,7 +120,9 @@ class Result implements \IteratorAggregate {
      * $f should take an exception and return a new result
      */
     public function orElse(callable $f) {
-        return $this->error === null ? $this : $f($this->error);
+        if( $this->value !== null ) return $this;
+        if( $this->error !== null ) return $f($this->error);
+        throw new \LogicException("Value and error cannot both be null");
     }
     
     /**
@@ -151,7 +153,7 @@ class Result implements \IteratorAggregate {
      * 
      * The _ is required if we want to use the word try since it is keyword
      */
-    public static function try_(callable $f) {
+    public static function _try(callable $f) {
         try {
             return Result::success($f());
         }

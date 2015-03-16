@@ -7,7 +7,10 @@ namespace Mkjp\Option;
  * Class representing a value that can be present or not
  */
 final class Option implements \IteratorAggregate {
-    private $value;
+    // The single instance of an empty option
+    private static $empty = null;
+    
+    private $value = null;
     
     /**
      * Private constructor to force instantiation through factory methods
@@ -127,6 +130,7 @@ final class Option implements \IteratorAggregate {
      * Get an empty option
      */
     public static function none() {
-        return new Option(null);
+        if( self::$empty === null ) self::$empty = new Option(null);
+        return self::$empty;
     }
 }

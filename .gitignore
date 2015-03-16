@@ -9,3 +9,5 @@ vendor/
 # Test files
 index.php
 main.php
+report
+build
