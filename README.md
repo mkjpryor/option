@@ -147,7 +147,7 @@ echo "Hello, " . findUserById($id)
                          return $u->username;
                      })
                      // If we didn't find a user, use a default name
-                     ->getOrDefault("Guest")
+                     ->getOrDefault("Guest");
 ```
 
 ## License ##
