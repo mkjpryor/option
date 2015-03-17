@@ -126,6 +126,16 @@ class Result implements \IteratorAggregate {
     }
     
     /**
+     * Converts this result to an option
+     * 
+     * If this is a success, it returns an Option::just
+     * If this is an error, it returns Option::none
+     */
+    public function toOption() {
+        return Option::from($this->value);
+    }
+    
+    /**
      * Get an error result containing the given, non-null exception
      */
     public static function error(\Exception $error) {

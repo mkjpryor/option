@@ -38,6 +38,14 @@ final class Option implements \IteratorAggregate {
     }
     
     /**
+     * Flattens an Option containing an option (containing an option, etc.) into an
+     * option containing a non-Option value (or none)
+     */
+    public function flatten() {
+        return ($this->value instanceof Option) ? $this->value->flatten() : $this;
+    }
+    
+    /**
      * Returns the option's value
      * 
      * If the option is empty, a \LogicException is thrown

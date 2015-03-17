@@ -1,7 +1,5 @@
 # mkjpryor/option #
 
-[![Build Status](https://travis-ci.org/mkjpryor/option.svg)](https://travis-ci.org/mkjpryor/option) [![Coverage Status](https://coveralls.io/repos/mkjpryor/option/badge.svg)](https://coveralls.io/r/mkjpryor/option)
-
 Simple option and result classes for PHP, inspired by Scala's Option, Haskell's Maybe and Rust's Result.
 
 The Option type provides additional functionality over nullable types for operating on values that may or may not be present.
@@ -112,7 +110,7 @@ class User {
 /**
  * Fetches a user from a database by their id
  *
- * Note how we return a Result that may contain an Option
+ * Note how we return a Result containing an Option
  * This is because there are three possible outcomes that are semantically different:
  *   1. We successfully find a user
  *   2. The user doesn't exist in the database (this isn't an error - it is expected and must be handled)
@@ -139,17 +137,17 @@ $id = 1234;  // This would come from request params or something similar
     
 // Print an appropriate welcome message for the user
 echo "Hello, " . findUserById($id)
-                     // In our circumstances, a DB error is like not finding a user
-                     ->orElse(function($e) {
-                         return Result::success(Option::none());
+                     // In this case, treat a DB error like not finding a user
+                     //
+                     // toOption converts the Result<Option<User>> into an
+                     // Option<Option<User>>, which we flatten to an Option<User>
+                     ->toOption()->flatten()
+                     // Get the username from the user
+                     ->map(function($u) {
+                         return $u->username;
                      })
-                     // Get the username from the optional user
-                     ->map(function($o) {
-                         return $o->map(function($u) { return $u->username; })
-                                  ->getOrDefault("Guest")
-                     })
-                     // We can safely use get since we know it won't be an error
-                     ->get();
+                     // If we didn't find a user, use a default name
+                     ->getOrDefault("Guest")
 ```
 
 ## License ##
