@@ -18,12 +18,13 @@ php composer.phar require mkjpryor/option dev-master
 
 ## Usage ##
 
-### Creating an Option ###
+### Creating an Option or a Result ###
 
 ```php
 <?php
 
 use Mkjp\Option\Option;
+use Mkjp\Option\Result;
 
 // Creates a non-empty option containing the value 10
 $o1 = Option::just(10);
@@ -35,14 +36,6 @@ $o2 = Option::none();
 //   If null is given, an empty option is created
 $o3 = Option::from(10);
 $o3 = Option::from(null);
-```
-
-### Creating a Result ###
-
-```php
-<?php
-
-use Mkjp\Option\Result;
 
 // Create a successful result with the given value
 $r1 = Result::success(42);
@@ -53,30 +46,56 @@ $r2 = Result::error(new \Exception("Some error occurred"));
 // Create a result by trying some operation that might fail
 //   Creates a success if the function returns successfully
 //   Creates an error if the function throws an exception
-$r3 = Result::_try(() => {
+$r3 = Result::_try(function() {
     // Some operation that might fail with an exception
 });
 ```
 
-### Retrieving a value from an Option (or Result) ###
+### Retrieving a value from an Option or Result ###
 
-The underlying value can be retrieved from an `Option` in an unsafe or safe manner (N.B. the same methods are available for retrieving a value from a `Result`):
+The underlying value can be retrieved from an `Option` in an unsafe or safe manner:
 
 ```php
 <?php
 
 // UNSAFE - throws a LogicException if the option is empty
-$val = $opt->get();
+$val = $option->get();
 
-// Returns the Option's value if it is non-empty, 0 otherwise
-$val = $opt->getOrDefault(0);  
+// Returns the option's value if it is non-empty, 0 otherwise
+$val = $option->getOrDefault(0);  
 
-// Returns the Option's value if it is non-empty, otherwise the result of evaluating the given function
+// Returns the option's value if it is non-empty, otherwise the result of evaluating the given function
 //   Useful if the default value is expensive to compute
-$val = $opt->getOrElse(function() { return 0; });  
+$val = $option->getOrElse(function() { return 0; });  
 
-// Return the Option's value if it is non-empty, null otherwise
-$val = $opt->getOrNull();
+// Return the option's value if it is non-empty, null otherwise
+$val = $option->getOrNull();
+```
+
+Similarly, the underlying value (or error) of a `Result` can be retrieved in an unsafe or safe manner:
+
+```php
+<?php
+
+// UNSAFE - if the result is an error, the exception that caused the error is thrown
+$val = $result->get();
+
+// UNSAFE - if the result is a success, a LogicException is thrown
+$err = $result->getError();
+
+// Returns the result's value if it is a success, 0 if it is an error
+$val = $result->getOrDefault(0);
+
+// Returns the result's value if it is a success, otherwise the result of evaluating
+// the given function with the exception that caused the error
+//   Useful if the default value is expensive to compute or depends on the type of error
+$val = $result->getOrElse(function(\Exception $error) {
+    if( $error instanceof MyException ) return 0;
+    return -1;
+});  
+
+// Return the result's value if it is a success, null otherwise
+$val = $result->getOrNull();
 ```
 
 ### Manipulating options and results ###
@@ -143,9 +162,7 @@ echo "Hello, " . findUserById($id)
                      // Option<Option<User>>, which we flatten to an Option<User>
                      ->toOption()->flatten()
                      // Get the username from the user
-                     ->map(function($u) {
-                         return $u->username;
-                     })
+                     ->map(function($u) { return $u->username; })
                      // If we didn't find a user, use a default name
                      ->getOrDefault("Guest");
 ```
