@@ -107,7 +107,7 @@ final class Option implements \IteratorAggregate {
      * $f should take the wrapped value and return a new value
      */
     public function map(callable $f) {
-        return !$this->isEmpty() ? Option::just($f($this->get())) : Option::none();
+        return !$this->isEmpty() ? Option::from($f($this->get())) : Option::none();
     }
     
     /**
